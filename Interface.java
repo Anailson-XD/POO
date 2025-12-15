@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class App {
+public class Interface {
     private static final Scanner sc = new Scanner(System.in);
 
     // Armazenamentos "in memory" do app
@@ -187,3 +187,4 @@ public class App {
         return v;
     }
 }
+
