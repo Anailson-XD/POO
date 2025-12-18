@@ -1,190 +1,189 @@
+import br.com.ifce.academico.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Interface {
-    private static final Scanner sc = new Scanner(System.in);
+public class Main {
 
-    // Armazenamentos "in memory" do app
-    private static final List<Aluno> alunos = new ArrayList<>();
-    private static final List<Professor> professores = new ArrayList<>();
-    private static final List<Diario> turmas = new ArrayList<>();
+
+    static Scanner sc = new Scanner(System.in);
+
+    static List<Aluno> alunos = new ArrayList<>();
+    static Professor professor;
+    static Diario diario = new Diario();
+    static Disciplina disciplina = new Disciplina();
 
     public static void main(String[] args) {
-        boolean rodando = true;
-        while (rodando) {
-            mostrarMenu();
-            int op = lerInt("Opção: ");
-            switch (op) {
-                case 1 -> cadastrarAluno();
-                case 2 -> cadastrarProfessor();
-                case 3 -> cadastrarTurma();
-                case 4 -> atribuirAlunoADisciplina();
-                case 5 -> cadastrarAlunoEmTurma();
-                case 6 -> configurarTipoMedia();
-                case 7 -> exibirDiario();
-                case 0 -> { rodando = false; System.out.println("Encerrando..."); }
-                default -> System.out.println("Opção inválida.");
+
+        int opcao;
+
+        do {
+            System.out.println("\n===== SISTEMA ACADÊMICO =====");
+            System.out.println("1 - Cadastrar Aluno");
+            System.out.println("2 - Cadastrar Professor");
+            System.out.println("3 - Cadastrar Turma");
+            System.out.println("4 - Atribuir Aluno à Disciplina (Notas)");
+            System.out.println("5 - Cadastrar Alunos na Turma");
+            System.out.println("6 - Configurar Tipo de Média");
+            System.out.println("7 - Exibir Diário Completo");
+            System.out.println("0 - Sair");
+            System.out.print("Opção: ");
+
+            opcao = sc.nextInt();
+            sc.nextLine(); // limpa buffer
+
+            switch (opcao) {
+                case 1:
+                    cadastrarAluno();
+                    break;
+                case 2:
+                    cadastrarProfessor();
+                    break;
+                case 3:
+                    cadastrarTurma();
+                    break;
+                case 4:
+                    atribuirNotas();
+                    break;
+                case 5:
+                    cadastrarAlunosNaTurma();
+                    break;
+                case 6:
+                    configurarMedia();
+                    break;
+                case 7:
+                    exibirDiario();
+                    break;
+                case 0:
+                    System.out.println("Encerrando sistema...");
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
             }
-        }
-        sc.close();
+
+        } while (opcao != 0);
     }
 
-    private static void mostrarMenu() {
-        System.out.println("\n=== MENU ===");
-        System.out.println("1 - Cadastrar Aluno");
-        System.out.println("2 - Cadastrar Professor");
-        System.out.println("3 - Cadastrar Turma (Diário)");
-        System.out.println("4 - Atribuir Aluno a Disciplina");
-        System.out.println("5 - Cadastrar alunos em Turma");
-        System.out.println("6 - Configurar tipo de média da Turma");
-        System.out.println("7 - Exibir todas as informações de um Diário");
-        System.out.println("0 - Sair");
-    }
 
-    private static void cadastrarAluno() {
-        String nome = lerString("Nome do aluno: ");
-        String nascimento = lerString("Nascimento (yyyy-mm-dd): ");
-        String matricula = lerString("Matrícula: ");
-        Aluno a = new Aluno(nome, nascimento, matricula);
+
+    static void cadastrarAluno() {
+        Aluno a = new Aluno();
+
+        System.out.print("Nome do aluno: ");
+        a.setNome(sc.nextLine());
+
+        System.out.print("Nascimento: ");
+        a.setNascimento(sc.nextLine());
+
+        System.out.print("Matrícula: ");
+        a.setMatricula(sc.nextInt());
+        sc.nextLine();
+
         alunos.add(a);
-        System.out.println("Aluno cadastrado.");
+        System.out.println("Aluno cadastrado com sucesso!");
     }
 
-    private static void cadastrarProfessor() {
-        String nome = lerString("Nome do professor: ");
-        String nascimento = lerString("Nascimento (yyyy-mm-dd): ");
-        String siape = lerString("SIAPE: ");
-        String formacao = lerString("Formação: ");
-        Professor p = new Professor(nome, nascimento, siape, formacao);
-        professores.add(p);
-        System.out.println("Professor cadastrado.");
-    }
+    static void cadastrarProfessor() {
+        professor = new Professor();
 
-    private static void cadastrarTurma() {
-        String codigo = lerString("Código da turma (Diário): ");
-        if (professores.isEmpty()) {
-            System.out.println("Nenhum professor cadastrado. Cadastre um professor antes.");
-            return;
-        }
-        System.out.println("Escolha o professor regente (pelo índice):");
-        for (int i = 0; i < professores.size(); i++) {
-            System.out.printf("%d - %s%n", i, professores.get(i).getNome());
-        }
-        int idx = lerInt("Índice: ");
-        if (idx < 0 || idx >= professores.size()) {
-            System.out.println("Índice inválido.");
-            return;
-        }
-        Diario d = new Diario(codigo, professores.get(idx));
-        turmas.add(d);
-        System.out.println("Turma criada.");
-    }
+        System.out.print("Nome do professor: ");
+        professor.setNome(sc.nextLine());
 
-    private static void atribuirAlunoADisciplina() {
-        if (alunos.isEmpty()) { System.out.println("Nenhum aluno cadastrado."); return; }
-        if (professores.isEmpty()) { System.out.println("Nenhum professor cadastrado."); return; }
+        System.out.print("Nascimento: ");
+        professor.setNascimento(sc.nextLine());
 
-        System.out.println("Escolha o aluno (índice):");
-        for (int i = 0; i < alunos.size(); i++) System.out.printf("%d - %s%n", i, alunos.get(i).getNome());
-        int ia = lerInt("Índice do aluno: ");
-        if (ia < 0 || ia >= alunos.size()) { System.out.println("Índice inválido."); return; }
-        Aluno aluno = alunos.get(ia);
-
-        System.out.println("Escolha o professor da disciplina (índice):");
-        for (int i = 0; i < professores.size(); i++) System.out.printf("%d - %s%n", i, professores.get(i).getNome());
-        int ip = lerInt("Índice do professor: ");
-        if (ip < 0 || ip >= professores.size()) { System.out.println("Índice inválido."); return; }
-        Professor prof = professores.get(ip);
-
-        String nomeDisc = lerString("Nome da disciplina: ");
-        Disciplina d = new Disciplina(nomeDisc, prof);
-        double n1 = lerDouble("Nota N1 (0-10): ");
-        double n2 = lerDouble("Nota N2 (0-10): ");
-        d.setN1(n1);
-        d.setN2(n2);
-        aluno.adicionarDisciplina(d);
-
-        System.out.println("Disciplina atribuída ao aluno.");
-    }
-
-    private static void cadastrarAlunoEmTurma() {
-        if (turmas.isEmpty()) { System.out.println("Nenhuma turma criada."); return; }
-        if (alunos.isEmpty()) { System.out.println("Nenhum aluno cadastrado."); return; }
-
-        System.out.println("Escolha a turma (índice):");
-        for (int i = 0; i < turmas.size(); i++) System.out.printf("%d - %s%n", i, turmas.get(i).getCodigo());
-        int it = lerInt("Índice da turma: ");
-        if (it < 0 || it >= turmas.size()) { System.out.println("Índice inválido."); return; }
-        Diario diario = turmas.get(it);
-
-        System.out.println("Escolha o aluno (índice):");
-        for (int i = 0; i < alunos.size(); i++) System.out.printf("%d - %s%n", i, alunos.get(i).getNome());
-        int ia = lerInt("Índice do aluno: ");
-        if (ia < 0 || ia >= alunos.size()) { System.out.println("Índice inválido."); return; }
-        Aluno aluno = alunos.get(ia);
-
-        // cuidado: evita duplicata
-        if (diario.getAlunos().contains(aluno)) {
-            System.out.println("Aluno já está matriculado nesta turma.");
-            return;
-        }
-        diario.matricularAluno(aluno);
-        System.out.println("Aluno matriculado na turma.");
-    }
-
-    private static void configurarTipoMedia() {
-        if (turmas.isEmpty()) { System.out.println("Nenhuma turma criada."); return; }
-        System.out.println("Escolha a turma (índice):");
-        for (int i = 0; i < turmas.size(); i++) System.out.printf("%d - %s%n", i, turmas.get(i).getCodigo());
-        int it = lerInt("Índice da turma: ");
-        if (it < 0 || it >= turmas.size()) { System.out.println("Índice inválido."); return; }
-        Diario diario = turmas.get(it);
-
-        System.out.println("Escolha o tipo de média:");
-        System.out.println("1 - Aritmética");
-        System.out.println("2 - Ponderada (peso 0.6/0.4 para 2 notas)");
-        int op = lerInt("Opção: ");
-        if (op == 1) diario.setCalculador(new MediaAritmetica());
-        else if (op == 2) diario.setCalculador(new MediaPonderada());
-        else System.out.println("Opção inválida.");
-        System.out.println("Tipo de média configurado.");
-    }
-
-    private static void exibirDiario() {
-        if (turmas.isEmpty()) { System.out.println("Nenhuma turma criada."); return; }
-        System.out.println("Escolha a turma (índice):");
-        for (int i = 0; i < turmas.size(); i++) System.out.printf("%d - %s%n", i, turmas.get(i).getCodigo());
-        int it = lerInt("Índice da turma: ");
-        if (it < 0 || it >= turmas.size()) { System.out.println("Índice inválido."); return; }
-        Diario diario = turmas.get(it);
-        diario.imprimirDiarioCompleto();
-    }
-
-    // ---------- utilitários ----------
-    private static String lerString(String msg) {
-        System.out.print(msg);
-        return sc.nextLine().trim();
-    }
-    private static int lerInt(String msg) {
-        System.out.print(msg);
-        while (!sc.hasNextInt()) {
-            System.out.print("Digite um número válido: ");
-            sc.nextLine();
-        }
-        int v = sc.nextInt();
+        System.out.print("SIAPE: ");
+        professor.setSiape(sc.nextInt());
         sc.nextLine();
-        return v;
+
+        System.out.print("Formação: ");
+        professor.setFormacao(sc.nextLine());
+
+        System.out.println("Professor cadastrado com sucesso!");
     }
-    private static double lerDouble(String msg) {
-        System.out.print(msg);
-        while (!sc.hasNextDouble()) {
-            System.out.print("Digite um número válido: ");
-            sc.nextLine();
+
+    static void cadastrarTurma() {
+        System.out.print("Código da turma: ");
+        diario.setCodigo(sc.nextLine());
+
+        if (professor == null) {
+            System.out.println("Cadastre um professor primeiro!");
+            return;
         }
-        double v = sc.nextDouble();
+
+        diario.setProfessor(professor);
+
+        System.out.print("Código da disciplina: ");
+        disciplina.setCodigo(sc.nextLine());
+
+        System.out.println("Turma cadastrada com sucesso!");
+    }
+
+    static void atribuirNotas() {
+
+        if (diario.getCalculadora() == null) {
+            System.out.println("Configure o tipo de média antes de lançar notas!");
+            return;
+        }
+
+        System.out.print("Nota N1: ");
+        disciplina.setN1(sc.nextDouble());
+
+        System.out.print("Nota N2: ");
+        disciplina.setN2(sc.nextDouble());
+
+        diario.calcular(disciplina);
+
+        System.out.println("Notas lançadas e média calculada!");
+    }
+
+
+    static void cadastrarAlunosNaTurma() {
+        if (alunos.isEmpty()) {
+            System.out.println("Nenhum aluno cadastrado!");
+            return;
+        }
+
+        for (Aluno a : alunos) {
+            diario.addAluno(a);
+        }
+
+        System.out.println("Alunos adicionados à turma!");
+    }
+
+    static void configurarMedia() {
+        System.out.println("1 - Média Aritmética");
+        System.out.println("2 - Média Ponderada");
+        System.out.print("Escolha: ");
+
+        int tipo = sc.nextInt();
         sc.nextLine();
-        return v;
+
+        if (tipo == 1) {
+            diario.setCalculadora(new MediaAritmetica());
+        } else {
+            diario.setCalculadora(new MediaPonderada());
+        }
+
+        System.out.println("Tipo de média configurado!");
+    }
+
+    static void exibirDiario() {
+        System.out.println("\n===== DIÁRIO =====");
+        System.out.println("Turma: " + diario.getCodigo());
+        System.out.println("Disciplina: " + disciplina.getCodigo());
+
+        Professor p = diario.getProfessor();
+        System.out.println("Professor: " + p.getNome() + " (SIAPE: " + p.getSiape() + ")");
+
+        for (Aluno a : diario.getAlunos()) {
+            System.out.println("\nAluno: " + a.getNome());
+            System.out.println("Matrícula: " + a.getMatricula());
+            System.out.println("Média: " + disciplina.getMedia());
+            System.out.println("Resultado: " +
+                    (disciplina.isAprovacao() ? "APROVADO" : "REPROVADO"));
+        }
     }
 }
 
